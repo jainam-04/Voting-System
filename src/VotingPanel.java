@@ -3,13 +3,14 @@ import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
 
 public class VotingPanel extends JFrame implements ActionListener {
     JLabel label1, label2, label3, label4, label5;
     JTextField textField1, textField2, textField3;
     JRadioButton radioButtonBJP, radioButtonINC, radioButtonAAP, radioButtonBSP, radioButtonCPI, radioButtonNPP;
     ButtonGroup buttonGroup1;
-    JButton buttonSubmit, buttonCancel, buttonResult;
+    JButton buttonSubmit, buttonCancel, buttonResult, buttonClose;
     String voterId;
     VotingPanel(String voterId){
         this.voterId = voterId;
@@ -85,7 +86,7 @@ public class VotingPanel extends JFrame implements ActionListener {
         radioButtonINC.addActionListener(this);
         add(radioButtonINC);
 
-        radioButtonNPP = new JRadioButton("National People's Party (NPP)");
+        radioButtonNPP = new JRadioButton("National People Party (NPP)");
         radioButtonNPP.setBounds(500, 400, 320, 30);
         radioButtonNPP.setForeground(Color.BLACK);
         radioButtonNPP.setFont(new Font("Arial", Font.BOLD, 20));
@@ -113,7 +114,7 @@ public class VotingPanel extends JFrame implements ActionListener {
         add(textField3);
 
         buttonSubmit = new JButton("Submit");
-        buttonSubmit.setBounds(350, 600, 100, 40);
+        buttonSubmit.setBounds(250, 600, 100, 40);
         buttonSubmit.setBackground(Color.GREEN);
         buttonSubmit.setForeground(Color.BLACK);
         buttonSubmit.setFont(new Font("Arial", Font.BOLD, 20));
@@ -121,7 +122,7 @@ public class VotingPanel extends JFrame implements ActionListener {
         add(buttonSubmit);
 
         buttonCancel = new JButton("Cancel");
-        buttonCancel.setBounds(550, 600, 100, 40);
+        buttonCancel.setBounds(450, 600, 100, 40);
         buttonCancel.setBackground(Color.RED);
         buttonCancel.setForeground(Color.WHITE);
         buttonCancel.setFont(new Font("Arial", Font.BOLD, 20));
@@ -129,12 +130,20 @@ public class VotingPanel extends JFrame implements ActionListener {
         add(buttonCancel);
 
         buttonResult = new JButton("See Results");
-        buttonResult.setBounds(430, 670, 150, 40);
+        buttonResult.setBounds(650, 600, 150, 40);
         buttonResult.setBackground(Color.CYAN);
         buttonResult.setForeground(Color.BLACK);
         buttonResult.setFont(new Font("Arial", Font.BOLD, 20));
         buttonResult.addActionListener(this);
         add(buttonResult);
+
+        buttonClose = new JButton("Close");
+        buttonClose.setBounds(450, 690, 100, 40);
+        buttonClose.setBackground(Color.lightGray);
+        buttonClose.setForeground(Color.BLACK);
+        buttonClose.setFont(new Font("Arial", Font.BOLD, 20));
+        buttonClose.addActionListener(this);
+        add(buttonClose);
 
         UIManager.put("OptionPane.messageFont", new FontUIResource(new Font("Arial", Font.BOLD, 20)));
         setLayout(null);
@@ -149,12 +158,7 @@ public class VotingPanel extends JFrame implements ActionListener {
         String name = textField1.getText();
         String email = textField2.getText();
         String vote = textField3.getText();
-        int countAAP = 0;
-        int countBJP = 0;
-        int countBSP = 0;
-        int countCPI = 0;
-        int countINC = 0;
-        int countNPP = 0;
+
         try {
             if (e.getSource() == radioButtonINC) {
                 textField3.setText("Indian National Congress (INC)");
@@ -167,7 +171,7 @@ public class VotingPanel extends JFrame implements ActionListener {
             } else if (e.getSource() == radioButtonCPI) {
                 textField3.setText("Communist Party of India (CPI)");
             } else if (e.getSource() == radioButtonNPP) {
-                textField3.setText("National People's Party (NPP)");
+                textField3.setText("National People Party (NPP)");
             }
             else if(e.getSource() == buttonSubmit){
                 if(name.equals("") || email.equals("")){
@@ -178,6 +182,49 @@ public class VotingPanel extends JFrame implements ActionListener {
                         JDBCConnection connection = new JDBCConnection();
                         String query = "insert into voting_panel values('" + name + "', '" + email + "', '" + vote + "', '" + voterId + "')";
                         connection.statement.executeUpdate(query);
+
+                        String countAAPQuery = "select vote_count from voting_results where vote = 'Aam Aadmi Party (AAP)'";
+                        int countAAP = 0;
+                        ResultSet rsAAP = connection.statement.executeQuery(countAAPQuery);
+                        if(rsAAP.next()){
+                            countAAP = rsAAP.getInt(1);
+                        }
+
+                        String countBJPQuery = "select vote_count from voting_results where vote = 'Bhartiya Janta Party (BJP)'";
+                        int countBJP = 0;
+                        ResultSet rsBJP = connection.statement.executeQuery(countBJPQuery);
+                        if(rsBJP.next()){
+                            countBJP = rsBJP.getInt(1);
+                        }
+
+                        String countBSPQuery = "select vote_count from voting_results where vote = 'Bahujan Samaj Party (BSP)'";
+                        int countBSP = 0;
+                        ResultSet rsBSP = connection.statement.executeQuery(countBSPQuery);
+                        if(rsBSP.next()){
+                            countBSP = rsBSP.getInt(1);
+                        }
+
+                        String countCPIQuery = "select vote_count from voting_results where vote = 'Communist Party of India (CPI)'";
+                        int countCPI = 0;
+                        ResultSet rsCPI = connection.statement.executeQuery(countCPIQuery);
+                        if(rsCPI.next()){
+                            countCPI = rsCPI.getInt(1);
+                        }
+
+                        String countINCQuery = "select vote_count from voting_results where vote = 'Indian National Congress (INC)'";
+                        int countINC = 0;
+                        ResultSet rsINC = connection.statement.executeQuery(countINCQuery);
+                        if(rsINC.next()){
+                            countINC = rsINC.getInt(1);
+                        }
+
+                        String countNPPQuery = "select vote_count from voting_results where vote = 'National People Party (NPP)'";
+                        int countNPP = 0;
+                        ResultSet rsNPP = connection.statement.executeQuery(countNPPQuery);
+                        if(rsNPP.next()){
+                            countNPP = rsNPP.getInt(1);
+                        }
+
                         if(radioButtonAAP.isSelected()){
                             countAAP += 1;
                             String query1 = "update voting_results set vote_count = '" + countAAP + "' where (vote = '" + vote + "')";
@@ -216,10 +263,13 @@ public class VotingPanel extends JFrame implements ActionListener {
                 }
             }
             else if(e.getSource() == buttonCancel){
-                System.exit(0);
+                new VoterLogin();
             }
             else if(e.getSource() == buttonResult){
                 new VotingResults(vote);
+            }
+            else if(e.getSource() == buttonClose){
+                System.exit(0);
             }
         }
         catch(Exception E){

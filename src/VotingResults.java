@@ -62,6 +62,7 @@ public class VotingResults extends JFrame implements ActionListener {
         add(buttonExit);
 
         setLayout(null);
+        getContentPane().setBackground(new Color(124, 93, 52));
         setSize(700, 700);
         setUndecorated(true);
         setLocation(400, 100);
